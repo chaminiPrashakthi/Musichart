@@ -1,37 +1,55 @@
-# Foobar
+# Conpago Full-stack Coding Test:
 
-Foobar is a Python library for dealing with word pluralization.
+## Features
 
-## Installation
+- New users can register for the application using a valid email address.
+- Users can log in to the system with their existing email address and password.
+- When a user logs into the system, they will be navigated to the Artists page, which displays top-charting artists based on the user's country.
+- Clicking on an artist's name will display the last three released albums of the artist.
+- Clicking on an album will display the lyrics for songs included in that album.
+- Included a caching API on the client side to improve performance and reduce the load (used localStorage because the data load is not significant).
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+## Technologies Used
 
-```bash
-pip install foobar
-```
+- BE - NodeJs
+- FE - reactJs/ Material UI components and templates
+- DB - Mongo DB
 
-## Usage
+## Libraries Used
+ 
+- Axios -  making HTTP requests
+- redux store (react-redux)
+- js-cookie - to keep the jwt token from user authentication
 
-```python
-import foobar
+## Prerequisites
 
-# returns 'words'
-foobar.pluralize('word')
+- NPM latest version
+- NodeJs latest version
 
-# returns 'geese'
-foobar.pluralize('goose')
+## Getting Started
 
-# returns 'phenomenon'
-foobar.singularize('phenomena')
-```
+1. Clone the repository:
+git clone https://github.com/chaminiPrashakthi/Musichart
 
-## Contributing
+2. Build and run the application using npm:
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+### BE:
+npm install
+npm start
 
-Please make sure to update tests as appropriate.
+### FE:
+cd lyricschartclient
+npm install
+npm start 
 
-## License
+## API Endpoints
 
-[MIT](https://choosealicense.com/licenses/mit/)
+- `POST /register`: Registe a new user.
+- `POST /login`: Log a user.
+- `GET /topArtists/${country}`: Get tops artists.
+- `GET /albums/${artistId}`: get latest albums.
+- `GET /lyrics/${albumId}`: Get all lyrics of the album.
+
+## Unit Testing
+
+//TODO
