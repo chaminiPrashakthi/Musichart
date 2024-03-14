@@ -34,13 +34,13 @@ git clone https://github.com/chaminiPrashakthi/Musichart
 2. Build and run the application using npm:
 
 ### BE:
-npm install
-npm start
+- npm install
+- npm start
 
 ### FE:
-cd lyricschartclient
-npm install
-npm start 
+- cd lyricschartclient
+- npm install
+- npm start 
 
 ## API Endpoints
 
