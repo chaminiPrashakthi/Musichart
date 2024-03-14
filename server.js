@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
-const cors = require('cors')
+const cors = require('cors');
 
 const HOST = 'localhost';
 const PORT = 8000;
@@ -69,6 +69,26 @@ const userSchema = new mongoose.Schema({
 // Create a user model for the 'user' collection
 const User = mongoose.model('User', userSchema);
 
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization')?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    jwt.verify(token, 'secretKey', (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const { email, country } = decoded;
+        req.email = email;
+        req.country = country;
+        next();
+    });
+};
+
+
 // User registration
 app.post('/register', async (req, res) => {
     try {
@@ -76,7 +96,7 @@ app.post('/register', async (req, res) => {
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({ error: 'User already registerd' });
+            return res.status(200).json({ error: 'User already registerd' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -86,7 +106,7 @@ app.post('/register', async (req, res) => {
         const token = jwt.sign({ email, country }, 'secretKey', { expiresIn: '1h' });
         return res
             .status(201)
-            .json({ token: token, message: "Successfully logged in", user: newUser})
+            .json({ token: token, message: "Successfully logged in", user: newUser })
 
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -110,12 +130,12 @@ app.post('/login', async (req, res) => {
 
         // Check if the user exists
         if (!user) {
-            return res.status(401).json({ message: 'User not exists' });
+            return res.status(200).json({ message: 'User not exists' });
         }
         const Comparepassword = await bcrypt.compare(password, user.password);
         const user_country = user.country
         if (!Comparepassword) {
-            return res.status(401).json({ message: 'Invalid password' });
+            return res.status(200).json({ message: 'Invalid password' });
         }
 
         const token = jwt.sign({ email, user_country }, 'secretKey', { expiresIn: '8h' });
@@ -129,7 +149,7 @@ app.post('/login', async (req, res) => {
 });
 
 // Fetch top  artists for the user's country
-app.get('/topArtists/:country', async (req, res) => {
+app.get('/topArtists/:country', verifyToken, async (req, res) => {
     try {
         const country = req.params.country
         const response = await axios.get(`${musixMatchApiUrl}/chart.artists.get`, {
@@ -151,7 +171,7 @@ app.get('/topArtists/:country', async (req, res) => {
 });
 
 // Fetch last 3 released albums for a specific artist
-app.get('/albums/:artistId', async (req, res) => {
+app.get('/albums/:artistId', verifyToken, async (req, res) => {
     try {
         const artistId = req.params.artistId;
 
@@ -175,7 +195,7 @@ app.get('/albums/:artistId', async (req, res) => {
 });
 
 // Fetch lyrics for a specific album
-app.get('/lyrics/:albumId', async (req, res) => {
+app.get('/lyrics/:albumId', verifyToken, async (req, res) => {
     try {
         const albumId = req.params.albumId;
         const tracksResponse = await axios.get(`${musixMatchApiUrl}/album.tracks.get`, {
